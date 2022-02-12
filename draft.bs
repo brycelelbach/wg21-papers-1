@@ -11,7 +11,7 @@ URL: https://wg21.link/DXXXXR0
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-11
+Date: 2022-02-12
 Markup Shorthands: markdown yes
 </pre>
 
@@ -265,45 +265,44 @@ namespace std {
         constexpr const E&& <del>value</del><ins>error</ins>() const&& noexcept;
         constexpr E&& <del>value</del><ins>error</ins>() && noexcept;
 
-        constexpr void swap(unexpected& other) noexcept(see below);
+        constexpr void swap(unexpected& other) noexcept(<i>see below</i>);
 
         template&lt;class E2&gt;
-            friend constexpr bool
-            operator==(const unexpected&, const unexpected&lt;E2&gt;&);
+            friend constexpr bool operator==(const unexpected&, const unexpected&lt;E2&gt;&);
 
         friend constexpr void swap(unexpected& x, unexpected& y) noexcept(noexcept(x.swap(y)));
 
     private:
-        E val; // exposition only
+        E <i>val</i>; // <i>exposition only</i>
     };
 
     template&lt;class E&gt; unexpected(E) -&gt; unexpected&lt;E&gt;;
 }
 </pre>
 
-### 20.9.3.2.3 Observers [expected.un.observe] ### {#expected.un.observe}
+### 20.9.3.2.3 Observers [expected.un.obs] ### {#expected.un.obs}
 <pre>
 constexpr const E& <del>value</del><ins>error</ins>() const& noexcept;
 constexpr E& <del>value</del><ins>error</ins>() & noexcept;
 </pre>
 
-*Returns*: `val`.
+*Returns*: <code><i>val</i></code>.
 
 <pre>
 constexpr E&& <del>value</del><ins>error</ins>() && noexcept;
 constexpr const E&& <del>value</del><ins>error</ins>() const&& noexcept;
 </pre>
 
-*Returns*: `std::move(val)`.
+*Returns*: <code>std::move(<i>val</i>)</code>.
 
-### 20.9.3.2.5 Equality operators [expected.un.eq] ### {#expected.un.eq}
+### 20.9.3.2.5 Equality operator [expected.un.eq] ### {#expected.un.eq}
 ```cpp
 template<class E2>
     friend constexpr bool operator==(const unexpected& x, const unexpected<E2>& y);
 ```
 
 *Mandates*: The expression
-<code>x.<del>value</del><ins>error</ins>()== y.<del>value</del><ins>error</ins>()</code> is well-formed and its result
+<code>x.<del>value</del><ins>error</ins>() == y.<del>value</del><ins>error</ins>()</code> is well-formed and its result
 is convertible to `bool`.
 
 *Returns*: <code>x.<del>value</del><ins>error</ins>() == y.<del>value</del><ins>error</ins>()</code>.
@@ -321,12 +320,12 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Constraints*: `is_constructible_v<E, GF>` is `true`.
 
-*Effects*: Direct-non-list-initializes `unex` with
+*Effects*: Direct-non-list-initializes <code><i>unex</i></code> with
 <code>std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>())</code>.
 
 *Postconditions*: `has_value()` is `false`.
 
-*Throws*: Any exception thrown by the initialization of `unex`.
+*Throws*: Any exception thrown by the initialization of <code><i>unex</i></code>.
 
 ### 20.9.6.4 Assignment [expected.object.assign] ### {#expected.object.assign}
 ```cpp
@@ -339,23 +338,29 @@ template<class G>
 Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Constraints*:
-  * `is_constructible_v<E, GF>` is `true`.
+  * `is_constructible_v<E, GF>` is `true`; and
   * `is_assignable_v<E&, GF>` is `true`; and
   * `is_nothrow_constructible_v<E, GF> || is_nothrow_move_constructible_v<T> || is_nothrow_move_constructible_v<E>` is `true`.
 
 *Effects*:
-  * If `has_value()` is `true`, equivalent to <i>`reinit-expected`</i><code>(unex, val, std::forward<GF>(e.<del>value</del><ins>error</ins>())); has_val = false; return *this;</code>
-  * Otherwise, equivalent to: <code>unex = std::forward<GF>(e.<del>value</del><ins>error</ins>()); return *this;</code>
+  * If `has_value()` is `true`, equivalent to:
+    <pre>
+        <i>reinit-expected</i>(<i>unex</i>, <i>val</i>, std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>()));
+        <i>has_val</i> = false;
+    </pre>
+  * Otherwise, equivalent to: <code><i>unex</i> = std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>());</code>
+
+*Returns*: `*this`.
 
 ### 20.9.6.7 Equality operators [expected.object.eq] ### {#expected.object.eq}
 ```cpp
-template<class E2> constexpr bool operator==(const expected& x, const unexpected<E2>& e);
+template<class E2> friend constexpr bool operator==(const expected& x, const unexpected<E2>& e);
 ```
 
 *Mandates*: The expression <code>x.error() == e.<del>value</del><ins>error</ins>()</code> is well-formed and
 its result is convertible to `bool`.
 
-*Returns*: <code>!x.has_value() && static_cast<bool>(x.error() == e.<del>value</del><ins>error</ins>())</code>.
+*Returns*: <code>!x.has_value() && static_cast&lt;bool&gt;(x.error() == e.<del>value</del><ins>error</ins>())</code>.
 
 ## 20.9.7 Partial specialization of `expected` for `void` types [expected.void] ## {#expected.void}
 ### 20.9.7.2 Constructors [expected.void.ctor] ### {#expected.void.ctor}
@@ -370,11 +375,11 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Constraints*: `is_constructible_v<E, GF>` is `true`.
 
-*Effects*: Direct-non-list-initializes `unex` with <code>std::forward<GF>(e.<del>value</del><ins>error</ins>())</code>.
+*Effects*: Direct-non-list-initializes <code><i>unex</i></code> with <code>std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>())</code>.
 
 *Postconditions*: `has_value()` is `false`.
 
-*Throws*: Any exception thrown by the initialization of `unex`.
+*Throws*: Any exception thrown by the initialization of <code><i>unex</i></code>.
 
 ### 20.9.7.4 Assignment [expected.void.assign] ### {#expected.void.assign}
 ```cpp
@@ -389,9 +394,14 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 *Constraints*: `is_constructible_v<E, GF>` is `true` and `is_assignable_v<E&, GF>` is `true`.
 
 *Effects*:
+  * If `has_value()` is `true`, equivalent to:
+    <pre>
+        construct_at(addressof(<i>unex</i>), std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>()));
+        <i>has_val</i> = false;
+    </pre>
+  * Otherwise, equivalent to: <code><i>unex</i> = std::forward&lt;GF&gt;(e.<del>value</del><ins>error</ins>());</code>
 
-  * If `has_value()` is `true`, equivalent to: <code>construct_at(addressof(unex), std::forward<GF>(e.<del>value</del><ins>error</ins>())); has_val = false; return *this;</code>
-  * Otherwise, equivalent to: <code>unex = std::forward<GF>(e.<del>value</del><ins>error</ins>()); return *this;</code>
+*Returns*: `*this`.
 
 ### 20.9.7.7 Equality operators [expected.void.eq] ### {#expected.void.eq}
 ```cpp
@@ -402,7 +412,7 @@ template<class E2>
 *Mandates*: The expression <code>x.error() == e.<del>value</del><ins>error</ins>()</code> is well-formed and
 its result is convertible to `bool`.
 
-*Returns*: <code>!x.has_value() && static_cast<bool>(x.error() == e.<del>value</del><ins>error</ins>())</code>.
+*Returns*: <code>!x.has_value() && static_cast&lt;bool&gt;(x.error() == e.<del>value</del><ins>error</ins>())</code>.
 
 <pre class=biblio>
 {

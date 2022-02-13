@@ -1,17 +1,17 @@
 <pre class='metadata'>
 Title: std::unexpected&lt;E&gt; should have error() as member accessor
-Shortname: DXXXX
+Shortname: P2549
 Revision: 0
 Audience: LEWG
-Status: D
+Status: P
 Group: WG21
 !Target: C++23
-URL: https://wg21.link/DXXXXR0
-!Source: <a href="https://github.com/Mick235711/wg21-papers/blob/main/draft.bs">github.com/Mick235711/wg21-papers/blob/main/draft.bs</a>
+URL: https://wg21.link/P2549R0
+!Source: <a href="https://github.com/Mick235711/wg21-papers/blob/main/P2549R0.bs">github.com/Mick235711/wg21-papers/blob/main/P2549R0.bs</a>
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-12
+Date: 2022-02-13
 Markup Shorthands: markdown yes
 </pre>
 

@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-13
+Date: 2022-02-20
 Markup Shorthands: markdown yes
 </pre>
 
@@ -406,7 +406,7 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 ### 20.9.7.7 Equality operators [expected.void.eq] ### {#expected.void.eq}
 ```cpp
 template<class E2>
-    constexpr bool operator==(const expected& x, const unexpected<E2>& e);
+    friend constexpr bool operator==(const expected& x, const unexpected<E2>& e);
 ```
 
 *Mandates*: The expression <code>x.error() == e.<del>value</del><ins>error</ins>()</code> is well-formed and

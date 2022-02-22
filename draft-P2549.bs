@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-20
+Date: 2022-02-22
 Markup Shorthands: markdown yes
 </pre>
 
@@ -19,7 +19,7 @@ Markup Shorthands: markdown yes
 table, th, td { border:1px solid grey; }
 </style>
 
-[[!P0323R11]] (will be update to R12 once that revision published) introduced class template `std::expected<T, E>`,
+[[!P0323R12]] introduced class template `std::expected<T, E>`,
 which is a vocabulary type that contains an expected value of type `T` or an error `E`.
 Similar to `std::optional<T>`, `std::expected<T, E>` provided member function `value()` and `error()` in order to allow access to the contained value or error type.
 The proposal also includes the auxillary type `std::unexpected<E>` to wrap the error type, to both disambiguating between value and error types, and also introduce
@@ -41,12 +41,15 @@ However, even though `std::unexpected<E>` is simply a wrapper over `E`, we need 
 The name of the member method is inconsistent with the
 `std::expected<T, E>` usage and intuition, so this proposal seeks to correct the name of the member access method to `error()`.
 
-[[!P0323R11]] is adopted for C++23 at the Feburary 2022 WG21 Plenary, so this proposal also targets C++23 to fix this.
+[[!P0323R12]] is adopted for C++23 at the Feburary 2022 WG21 Plenary, so this proposal also targets C++23 to fix this.
 
 # Revision History # {#revisions}
 
+## R1 ## {#r1}
+- Rebased onto [[!P0323R12]].
+
 ## R0 ## {#r0}
-Initial revision.
+- Initial revision.
 
 # Motivation # {#motivation}
 
@@ -101,7 +104,7 @@ Provide `error()` instead of `value()` for `std::unexpected<E>` has several bene
     or (worse) have narrow contract and UB on abnormal call. Passing the current `std::unexpected<E>`-wrapped type to interface expecting the normal `value()` semantics
     can be surprising when leading to runtime exception or (worse) UB.
 
-Side note: you can even smell the inconsistency when many of the wording of equality operator between `expected<T, E>` and `unexpected<E>` in [[!P0323R11]] contains clause such as
+Side note: you can even smell the inconsistency when many of the wording of equality operator between `expected<T, E>` and `unexpected<E>` in [[!P0323R12]] contains clause such as
 `x.error() == e.value()`.
 
 # Design # {#design}
@@ -134,7 +137,7 @@ for constructing an `std::expected<T, E>`, it is not intended to be used extensi
 The above discussion leads to the consideration: since `std::unexpected<E>` is just meant as a "trampoline", does it need a member accessor at all?
 Besides, the intended usage is just `return std::unexpected(some_error);`, provide a member accessor does not seems to help this use case at all.
 
-This is an interesting point. Also, one of [[!P0323R11]]'s referenced implementation [[viboes-expected]] does this: its `std::experimental::fundamental_v3::unexpected<E>` type
+This is an interesting point. Also, one of [[!P0323R12]]'s referenced implementation [[viboes-expected]] does this: its `std::experimental::fundamental_v3::unexpected<E>` type
 have no accessor at all. However, providing an accessor does not seems to do any harm, and may have interesting use cases that I'm not aware of. Therefore
 I do not propose this, but will not against changing the proposal to this direction if L(E)WG favor this.
 
@@ -148,7 +151,7 @@ suggest bumping `__cpp_lib_expected` to the date of adoption (definitely larger 
 
 # Implementation & Usage Experience # {#implementation}
 
-The referenced implementation of [[P0323R11]] all implement the interface of original proposal (except [[viboes-expected]] mentioned above).
+The referenced implementation of [[!P0323R12]] all implement the interface of original proposal (except [[viboes-expected]] mentioned above).
 This section thus investigated several similar implementations.
 
 ## Outcome v2 ## {#outcome-v2}
@@ -156,7 +159,7 @@ This section thus investigated several similar implementations.
 handling is unsuitable. It is both provided as Boost.Outcome and the standalone GitHub repository, and also having an experimental branch that is the
 basis of [[P1095R0]] and [[P1028R3]] `std::status_code`. The library provided `result<T, E, Policy>` and `outcome<T, EC, EP, Policy>` types that represents value/error
 duo type, just like `std::expected<T, E>`, with the difference in interface and also `outcome` can hold both `EC` and `EP` (error code and exception (pointer)).
-The design of `result<T, E>` also deeply influences [[!P0323R11]], and the final adopted design of `std::expected<T, E>` is very similar to what `outcome::result<T, E>`
+The design of `result<T, E>` also deeply influences [[!P0323R12]], and the final adopted design of `std::expected<T, E>` is very similar to what `outcome::result<T, E>`
 provides.
 
 One of the main design difference is that `result<T, E>` can be implicitly constructed from both `T` and `E`, while `std::expected<T, E>` can only be implicitly constructed from the former.
@@ -239,7 +242,7 @@ can see a consistency here.
 
 # Wording # {#wording}
 
-The wording below is based on [[N4901]] plus the editorial PR of P0323R12. This will be rebased onto post-Feburary Working Draft in the next revision, with hopefully no change of section name.
+The wording below is based on [[N4901]] plus the editorial PR of [[!P0323R12]]. This will be rebased onto post-Feburary Working Draft in the next revision, with hopefully no change of section name.
 
 ## 20.9.3.2 Class template `unexpected` [expected.un.object] ## {#expected.un.object}
 ### 20.9.3.2.1 General [expected.un.object.general] ### {#expected.un.object.general}

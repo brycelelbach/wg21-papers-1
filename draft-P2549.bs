@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-22
+Date: 2022-02-23
 Markup Shorthands: markdown yes
 </pre>
 
@@ -263,9 +263,9 @@ namespace std {
         constexpr unexpected& operator=(const unexpected&) = default;
         constexpr unexpected& operator=(unexpected&&) = default;
 
-        constexpr const E& <del>value</del><ins>error</ins>() const& noexcept;
+        constexpr const E& <del>value</del><ins>error</ins>() const & noexcept;
         constexpr E& <del>value</del><ins>error</ins>() & noexcept;
-        constexpr const E&& <del>value</del><ins>error</ins>() const&& noexcept;
+        constexpr const E&& <del>value</del><ins>error</ins>() const && noexcept;
         constexpr E&& <del>value</del><ins>error</ins>() && noexcept;
 
         constexpr void swap(unexpected& other) noexcept(<i>see below</i>);
@@ -285,7 +285,7 @@ namespace std {
 
 ### 20.9.3.2.3 Observers [expected.un.obs] ### {#expected.un.obs}
 <pre>
-constexpr const E& <del>value</del><ins>error</ins>() const& noexcept;
+constexpr const E& <del>value</del><ins>error</ins>() const & noexcept;
 constexpr E& <del>value</del><ins>error</ins>() & noexcept;
 </pre>
 
@@ -293,7 +293,7 @@ constexpr E& <del>value</del><ins>error</ins>() & noexcept;
 
 <pre>
 constexpr E&& <del>value</del><ins>error</ins>() && noexcept;
-constexpr const E&& <del>value</del><ins>error</ins>() const&& noexcept;
+constexpr const E&& <del>value</del><ins>error</ins>() const && noexcept;
 </pre>
 
 *Returns*: <code>std::move(<i>val</i>)</code>.

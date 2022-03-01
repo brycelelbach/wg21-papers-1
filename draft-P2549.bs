@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-02-23
+Date: 2022-03-01
 Markup Shorthands: markdown yes
 </pre>
 
@@ -47,6 +47,7 @@ The name of the member method is inconsistent with the
 
 ## R1 ## {#r1}
 - Rebased onto [[!P0323R12]].
+- Fixed some typos and add examples.
 
 ## R0 ## {#r0}
 - Initial revision.
@@ -104,6 +105,31 @@ Provide `error()` instead of `value()` for `std::unexpected<E>` has several bene
     or (worse) have narrow contract and UB on abnormal call. Passing the current `std::unexpected<E>`-wrapped type to interface expecting the normal `value()` semantics
     can be surprising when leading to runtime exception or (worse) UB.
 
+Before change:
+```cpp
+void fun()
+{
+    using namespace std::literals;
+    using ET = std::expected<int, std::string>;
+    auto unex = std::unexpected("Oops"s);
+    auto wrapped = unex.value(); // okay, get "Oops"
+    auto ex = ET(unex); // implicit, can also happen in parameter passing, etc.
+    auto wrapped2 = ex.value(); // throws!
+}
+```
+After change:
+```cpp
+void fun()
+{
+    using namespace std::literals;
+    using ET = std::expected<int, std::string>;
+    auto unex = std::unexpected("Oops"s);
+    auto wrapped = unex.error(); // okay, get "Oops"
+    auto ex = ET(unex); // implicit, can also happen in parameter passing, etc.
+    auto wrapped2 = ex.error(); // okay, get "Oops" too.
+}
+```
+
 Side note: you can even smell the inconsistency when many of the wording of equality operator between `expected<T, E>` and `unexpected<E>` in [[!P0323R12]] contains clause such as
 `x.error() == e.value()`.
 
@@ -119,7 +145,7 @@ I would argue that most use of `value()` member function across the standard lib
 Functions like `std::chrono::leap_second::value()` can be thought as an extended definition of "value": leap second can hold either `+1s` or `-1s` as value.
 The only case that I agree are related is the C++11 `std::error_code`/`std::error_condition` pair and their `value()` member that returns the error code,
 which seems to return an error(-related) value. However, I want to point out that `value()` is not really the "error value" or "unexpected outcome" of these types,
-since this is the expected outcome (or "normal value") or an `std::error_code`. Furthermore, `value()` is not really the whole "error" contained in these types,
+since this is the expected outcome (or "normal value") on an `std::error_code`. Furthermore, `value()` is not really the whole "error" contained in these types,
 since these two types consists of `value()` plus `category()`. Only `value()` cannot represent a unique error, and should not be taken as the "error representation".
 
 ### Conversion operator ### {#conversion-operator}
@@ -135,11 +161,11 @@ for constructing an `std::expected<T, E>`, it is not intended to be used extensi
 
 ### No member accessor ### {#no-member-accessor}
 The above discussion leads to the consideration: since `std::unexpected<E>` is just meant as a "trampoline", does it need a member accessor at all?
-Besides, the intended usage is just `return std::unexpected(some_error);`, provide a member accessor does not seems to help this use case at all.
+Besides, the intended usage is just `return std::unexpected(some_error);`, provide a member accessor does not seem to help this use case at all.
 
 This is an interesting point. Also, one of [[!P0323R12]]'s referenced implementation [[viboes-expected]] does this: its `std::experimental::fundamental_v3::unexpected<E>` type
 have no accessor at all. However, providing an accessor does not seems to do any harm, and may have interesting use cases that I'm not aware of. Therefore
-I do not propose this, but will not against changing the proposal to this direction if L(E)WG favor this.
+I do not propose this but will not against changing the proposal to this direction if L(E)WG favor this.
 
 ## Target Vehicle ## {#target-vehicle}
 This proposal targets C++23. I'm aware that the design freeze deadline of C++23 is already passed, but I think this can be classified as an improvement/fix over the defect
@@ -199,7 +225,7 @@ unexpected `E` (or `EC` and `EP`). Their accessors are: (the `assume_*` narrow-c
 </table>
 
 We can see that Outcome v2 is pretty consistent in member accessor, and especially its `failure_type<EC, EP>` provides `error()` and `exception()`,
-not `value()`. Also note that the default exception being thrown, `bad_result_access` and `bad_outcome_access`, does not holds the error/exception value at all.
+not `value()`. Also note that the default exception being thrown, `bad_result_access` and `bad_outcome_access`, does not hold the error/exception value at all.
 There is a `bad_result_access_with<E>` for consistency with `std::expected<T, E>`.
 
 ## Boost.LEAF ## {#leaf}

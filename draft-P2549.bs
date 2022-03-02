@@ -2,7 +2,7 @@
 Title: std::unexpected&lt;E&gt; should have error() as member accessor
 Shortname: D2549
 Revision: 1
-Audience: LEWG
+Audience: LWG
 Status: D
 Group: WG21
 !Target: C++23
@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-03-01
+Date: 2022-03-02
 Markup Shorthands: markdown yes
 </pre>
 
@@ -48,6 +48,18 @@ The name of the member method is inconsistent with the
 ## R1 ## {#r1}
 - Rebased onto [[!P0323R12]].
 - Fixed some typos and add examples.
+- LEWG sees [[!P2549R0]] at the 2022-03-01 Telecon, with the following poll:
+
+**Poll:** Advance [[!P2549R0]] to electronic polling to send it to LWG for C++23 (as a [[P0592R4]] priority 2 item)
+
+<table>
+    <thead><tr><td>SF</td><td>F</td><td>N</td><td>A</td><td>SA</td></tr></thead>
+    <tbody><tr><td>7</td><td>5</td><td>2</td><td>0</td><td>0</td></tr></tbody>
+</table>
+
+**Outcome:** Strong Consensus in Favor 🎉
+
+This revision thus targets LWG.
 
 ## R0 ## {#r0}
 - Initial revision.

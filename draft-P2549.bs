@@ -11,7 +11,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-03-15
+Date: 2022-04-02
 Markup Shorthands: markdown yes
 </pre>
 
@@ -46,7 +46,7 @@ The name of the member method is inconsistent with the
 # Revision History # {#revisions}
 
 ## R1 ## {#r1}
-- Rebased onto [[!P0323R12]].
+- Rebased onto [[!P0323R12]] and [[!N4910]].
 - Fixed some typos and added examples.
 - LEWG sees [[!P2549R0]] at the 2022-03-01 Telecon, with the following poll:
 
@@ -281,12 +281,12 @@ can see consistency here.
 
 # Wording # {#wording}
 
-The wording below is based on [[N4901]] plus the editorial PR of [[!P0323R12]]. This will be rebased onto post-February Working Draft in the next revision, with hopefully no change of section name.
+The wording below is based on [[!N4910]].
 
 Currently, feature test macro wording is not present. If [[P2505R1]] ends up adopting the macro changes, then I will provide an accompanied wording here.
 
-## 20.9.3.2 Class template `unexpected` [expected.un.object] ## {#expected.un.object}
-### 20.9.3.2.1 General [expected.un.object.general] ### {#expected.un.object.general}
+## 22.8.3.2 Class template `unexpected` [expected.un.object] ## {#expected.un.object}
+### 22.8.3.2.1 General [expected.un.object.general] ### {#expected.un.object.general}
 <pre>
 namespace std {
     template&lt;class E&gt;
@@ -324,7 +324,7 @@ namespace std {
 }
 </pre>
 
-### 20.9.3.2.3 Observers [expected.un.obs] ### {#expected.un.obs}
+### 22.8.3.2.3 Observers [expected.un.obs] ### {#expected.un.obs}
 <pre>
 constexpr const E& <del>value</del><ins>error</ins>() const & noexcept;
 constexpr E& <del>value</del><ins>error</ins>() & noexcept;
@@ -339,7 +339,7 @@ constexpr const E&& <del>value</del><ins>error</ins>() const && noexcept;
 
 *Returns*: <code>std::move(<i>val</i>)</code>.
 
-### 20.9.3.2.5 Equality operator [expected.un.eq] ### {#expected.un.eq}
+### 22.8.3.2.5 Equality operator [expected.un.eq] ### {#expected.un.eq}
 ```cpp
 template<class E2>
     friend constexpr bool operator==(const unexpected& x, const unexpected<E2>& y);
@@ -351,8 +351,8 @@ is convertible to `bool`.
 
 *Returns*: <code>x.<del>value</del><ins>error</ins>() == y.<del>value</del><ins>error</ins>()</code>.
 
-## 20.9.6 Class template `expected` [expected.expected] ## {#expected.expected}
-### 20.9.6.2 Constructors [expected.object.ctor] ### {#expected.object.ctor}
+## 22.8.6 Class template `expected` [expected.expected] ## {#expected.expected}
+### 22.8.6.2 Constructors [expected.object.ctor] ### {#expected.object.ctor}
 ```cpp
 template<class G>
     constexpr explicit(!is_convertible_v<const G&, E>) expected(const unexpected<G>& e);
@@ -371,7 +371,7 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Throws*: Any exception thrown by the initialization of <code><i>unex</i></code>.
 
-### 20.9.6.4 Assignment [expected.object.assign] ### {#expected.object.assign}
+### 22.8.6.4 Assignment [expected.object.assign] ### {#expected.object.assign}
 ```cpp
 template<class G>
     constexpr expected& operator=(const unexpected<G>& e);
@@ -396,7 +396,7 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Returns*: `*this`.
 
-### 20.9.6.7 Equality operators [expected.object.eq] ### {#expected.object.eq}
+### 22.8.6.7 Equality operators [expected.object.eq] ### {#expected.object.eq}
 ```cpp
 template<class E2> friend constexpr bool operator==(const expected& x, const unexpected<E2>& e);
 ```
@@ -406,8 +406,8 @@ its result is convertible to `bool`.
 
 *Returns*: <code>!x.has_value() && static_cast&lt;bool&gt;(x.error() == e.<del>value</del><ins>error</ins>())</code>.
 
-## 20.9.7 Partial specialization of `expected` for `void` types [expected.void] ## {#expected.void}
-### 20.9.7.2 Constructors [expected.void.ctor] ### {#expected.void.ctor}
+## 22.8.7 Partial specialization of `expected` for `void` types [expected.void] ## {#expected.void}
+### 22.8.7.2 Constructors [expected.void.ctor] ### {#expected.void.ctor}
 ```cpp
 template<class G>
     constexpr explicit(!is_convertible_v<const G&, E>) expected(const unexpected<G>& e);
@@ -425,7 +425,7 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Throws*: Any exception thrown by the initialization of <code><i>unex</i></code>.
 
-### 20.9.7.4 Assignment [expected.void.assign] ### {#expected.void.assign}
+### 22.8.7.4 Assignment [expected.void.assign] ### {#expected.void.assign}
 ```cpp
 template<class G>
     constexpr expected& operator=(const unexpected<G>& e);
@@ -447,7 +447,7 @@ Let `GF` be `const G&` for the first overload and `G` for the second overload.
 
 *Returns*: `*this`.
 
-### 20.9.7.7 Equality operators [expected.void.eq] ### {#expected.void.eq}
+### 22.8.7.7 Equality operators [expected.void.eq] ### {#expected.void.eq}
 ```cpp
 template<class E2>
     friend constexpr bool operator==(const expected& x, const unexpected<E2>& e);

@@ -11,7 +11,7 @@ URL: https://wg21.link/DXXXXR0
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-03
+Date: 2022-04-04
 Markup Shorthands: markdown yes
 </pre>
 
@@ -363,7 +363,9 @@ have a feature test macro, so I propose to include a new language feature testin
 
 # Implementation Experience # {#implementation}
 
-TODO
+An experimental implementation of the proposed feature is located in my Clang fork at [[!clang-implementation]], which is capable of handling `void foo() = delete("Reason");` syntax.
+The implementation is very incomplete (no support for constructors, no feature-test macro, only a few testing, etc.), so it is only aimed at proving that the vendors can support
+the proposed feature relatively easily.
 
 # Wording # {#wording}
 
@@ -440,6 +442,13 @@ In [tab:cpp.predefined.ft], insert a new row in a place that respects the curren
         ],
         "href": "https://codesearch.isocpp.org",
         "title": "Andrew's C/C++ Token Count Dataset 2019"
+    },
+    "clang-implementation": {
+        "authors": [
+            "Yihe Li"
+        ],
+        "href": "https://github.com/Mick235711/llvm-project/tree/delete-with-reason",
+        "title": "Mick235711's Clang Fork"
     }
 }
 </pre>

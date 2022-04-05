@@ -11,7 +11,7 @@ URL: https://wg21.link/DXXXXR0
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-04
+Date: 2022-04-06
 Markup Shorthands: markdown yes
 </pre>
 
@@ -363,8 +363,22 @@ have a feature test macro, so I propose to include a new language feature testin
 
 # Implementation Experience # {#implementation}
 
-An experimental implementation of the proposed feature is located in my Clang fork at [[!clang-implementation]], which is capable of handling `void foo() = delete("Reason");` syntax.
-The implementation is very incomplete (no support for constructors, no feature-test macro, only a few testing, etc.), so it is only aimed at proving that the vendors can support
+An experimental implementation of the proposed feature is located in my Clang fork at [[!clang-implementation]], which is capable of handling
+```cpp
+void foo() = delete("Reason");
+void fun() {foo();}
+```
+and output the following error message: (close to what I want; of course, there are other formats such as put reason on separate lines)
+```cpp
+propose.cpp:2:13: error: call to deleted function 'foo': "Reason"
+void fun() {foo();}
+            ^~~
+propose.cpp:1:6: note: candidate function has been explicitly deleted
+void foo() = delete("Reason");
+     ^
+1 error generated.
+```
+The implementation is *very* incomplete (no support for constructors, no feature-test macro, only a few testing, etc.), so it is only aimed at proving that the vendors can support
 the proposed feature relatively easily.
 
 # Wording # {#wording}

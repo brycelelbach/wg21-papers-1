@@ -1,0 +1,469 @@
+<pre class='metadata'>
+Title: <code>= delete("should have a reason");</code>
+Shortname: P2573
+Revision: 0
+Audience: EWG
+Status: P
+Group: WG21
+!Target: C++23
+URL: https://wg21.link/P2573R0
+!Source: <a href="https://github.com/Mick235711/wg21-papers/blob/main/P2573R0.bs">github.com/Mick235711/wg21-papers/blob/main/P2573R0.bs</a>
+!Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
+Editor: Yihe Li, winmikedows@hotmail.com
+No abstract: true
+Date: 2022-04-06
+Markup Shorthands: markdown yes
+</pre>
+
+<style>
+table, th, td { border:1px solid grey; }
+</style>
+
+C++ had adopted the original `static_assert` with message in C++11 by [[N1720]], the `[[deprecated]]` attribute with message in C++14 by [[N3760]],
+and the `[[nodiscard]]` attribute with message in C++20 by [[P1301R4]]. All of these introductions succeeded in introducing the ability to provide a user-defined message
+accompanying the generated diagnostic (warning or error), thus helping to communicate the exact intent and reasoning of the library author and generate more friendly diagnostics.
+This paper proposes to take a further step forward, and improve upon the other common and modern way of generating diagnostics, namely using `= delete` to delete a function,
+by also introducing an optional message component.
+
+# Revision History # {#revisions}
+
+## R0 ## {#r0}
+- Initial revision.
+
+# Motivation # {#motivation}
+
+Introduced in C++11, `= default` and `= delete` had joined `= 0` as possible alternative specification for a function body, instead of an ordinary brace-enclosed body of statements.
+The original motivation for deleted function declaration via `= delete` is to replace (and supersede) the C++98/03-era common practice of declaring special member functions as `private`
+and not define them to disable their automatic generation. However, `= delete`'s addition had gained even greater power, for it is permitted to be used for any function, not just special members.
+The original paper, [[N2346]], described the expected usage of deleted function as:
+> The primary power of this approach is twofold. First, use of default language facilities can be made an error by deleting the definition of functions that they require. Second, problematic conversions can be made an error by deleting the definition for the offending conversion (or overloaded function).
+
+Looking back at present, ten years after the introduction of deleted functions, we can confidently conclude that `= delete` had become one of the key C++11 features that greatly
+improved user experience on error usages of library functions and had been a success story of "Modern C++" revolution. We have seen relatively wide adoption both inside the standard library
+and in the wider community scope, with over 40k results for `= delete` in the [[ACTCD19]] database. (Though, admittedly, the feature is still mostly used for member functions, especially its original motivation, disable SMFs.)
+
+There are several reasons we preferred deleted functions over the traditional `private`-but-not-defined ones, including better semantics (`friend` and other members are still unaccessible, turning a linker error into a compile-time error),
+better diagnostics (instead of cryptic "inaccessible function" errors, the user directly know that the function is deleted), and greater power (not just SMFs).
+As we are constantly striving to present a better and friendlier interface to the user of C++, this proposal wants to take the feature a step forward in the "better diagnostics" area:
+Instead of an already friendlier but still somewhat cryptic "calling deleted function" error, we directly permit the library authors to present an optional extra message that
+should be included in the error message, such that the user will know the exact reasoning of *why* the function is deleted, and in some cases, *which* replacement should the user heads to instead.
+
+In other words, usage of `= delete` on a function by the library author practically means that
+> The library author is saying, "I know what you’re trying to do, and what you’re trying to do is wrong."
+([Source](https://quuxplusone.github.io/blog/2021/10/17/equals-delete-means/))
+
+and after this proposal, my hope is that such usage will mean
+> The library author is saying, "I know what you’re trying to do, and what you’re trying to do is wrong. **However, I can tell you why I think it is wrong, and I can point you to the right thing to do.**"
+
+The proposed syntax for this feature is (arguably) the "obvious" choice: allow an optional *string-literal* to be passed as an argument clause to `= delete`.
+Such a `= delete("message");` clause will be usable whenever the original `= delete;` clause is usable as a *function-body*.
+Thus the usage will look like this:
+```cpp
+void newapi();
+void oldapi() = delete("This old API is outdated and already been removed. Please use newapi() instead.");
+
+template<typename T>
+struct A {/* ... */};
+template<typename T>
+A<T> factory(const T&) {/* process lvalue */}
+template<typename T>
+A<T> factory(const T&&) = delete("Using rvalue to construct A may result in dangling reference");
+
+struct MoveOnly
+{
+    // ... (with move members defaulted or defined)
+    MoveOnly(const MoveOnly&) = delete("Copy-construction is expensive; please use move construction instead.");
+    MoveOnly& operator=(const MoveOnly&) = delete("Copy-assignment is expensive; please use move assignment instead.");
+};
+```
+There is a tony table of how a non-copyable class evolves from C++98 to this proposal, thus introducing the benefits of the proposal and the user-friendliness it brings.
+All the examples (except the hypothetical one) are generated by x86-64 clang version 14.0.0 on Compiler Explorer.
+The usage client is
+```cpp
+int main()
+{
+    NonCopyable nc;
+    NonCopyable nc2 = nc;
+    (void)nc2;
+}
+```
+<table>
+<thead>
+<tr>
+    <td>Standard</td>
+    <td>Code</td>
+    <td>Diagnostics / Comment</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td rowspan=2>C++98</td>
+    <td rowspan=2>
+```cpp
+class NonCopyable
+{
+public:
+    // ...
+    NonCopyable() {}
+private:
+    // copy members; no definition
+    NonCopyable(const NonCopyable&);
+    NonCopyable& operator=(const NonCopyable&);
+};
+```
+    </td>
+    <td>
+```cpp
+<source>:15:23: error: calling a
+private constructor of class 'NonCopyable'
+    NonCopyable nc2 = nc;
+                      ^
+<source>:8:5: note: declared private here
+    NonCopyable(const NonCopyable&);
+    ^
+```
+    </td>
+</tr>
+<tr>
+    <td>Average user probably don't know what "`private` constructor" means. Also, `friend`/member usage still result in link-time error only.</td>
+</tr>
+<tr>
+    <td rowspan=2>C++11 (present)</td>
+    <td rowspan=2>
+```cpp
+class NonCopyable
+{
+public:
+    // ...
+    NonCopyable() = default;
+
+    // copy members
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+    // maybe provide move members instead
+};
+```
+    </td>
+    <td>
+```cpp
+<source>:16:17: error: call to deleted
+constructor of 'NonCopyable'
+    NonCopyable nc2 = nc;
+                ^     ~~
+<source>:8:5: note: 'NonCopyable' has been
+explicitly marked deleted here
+    NonCopyable(const NonCopyable&) = delete;
+    ^
+```
+    </td>
+</tr>
+<tr>
+    <td>Great improvement: we can teach "deleted" means "usage is wrong" constantly, and everything is compile-time error. However, still for average user a bit hard to understand and don't point out what to do instead.</td>
+</tr>
+<tr>
+    <td rowspan=2>This proposal</td>
+    <td rowspan=2>
+```cpp
+class NonCopyable
+{
+public:
+    // ...
+    NonCopyable() = default;
+
+    // copy members
+    NonCopyable(const NonCopyable&)
+        = delete("Since this class manages unique resources, \
+copy is not supported; use move instead.");
+    NonCopyable& operator=(const NonCopyable&)
+        = delete("Since this class manages unique resources, \
+copy is not supported; use move instead.");
+    // provide move members instead
+};
+```
+    </td>
+    <td>
+```cpp
+<source>:16:17: error: call to deleted
+constructor of 'NonCopyable': Since this class manages
+unique resources, copy is not supported; use move instead.
+    NonCopyable nc2 = nc;
+                ^     ~~
+<source>:8:5: note: 'NonCopyable' has been
+explicitly marked deleted here
+    NonCopyable(const NonCopyable&)
+    ^
+```
+    </td>
+</tr>
+<tr>
+    <td>With minimal change, we get a huge boost in user/beginner friendliness, with ability to explain why and what to do instead.</td>
+</tr>
+</tbody>
+</table>
+There are some discussion on alternative syntax below.
+
+# Usage Example # {#usage-examples}
+
+## Standard Library ## {#stl-usage}
+
+This part contains some concrete examples of how current deleted functions in the standard library can benefit from the new message parameter. All examples are based on [[!N4910]].
+
+**Note: As will be discussed below, the standard does not mandate any diagnostic text for deleted functions; a vendor has the freedom (and is encouraged by this proposal)
+to implement these messages as non-breaking QoI features.**
+
+```cpp
+// [unique.ptr.single.general]
+namespace std {
+    template<class T, class D = default_delete<T>> class unique_ptr {
+    public:
+        // ...
+        // disable copy from lvalue
+        unique_ptr(const unique_ptr&) = delete(
+            "unique_ptr<T> resembles unique ownership, so copy is not supported. Use move operations instead.");
+        unique_ptr& operator=(const unique_ptr&) = delete(
+            "unique_ptr<T> resembles unique ownership, so copy is not supported. Use move operations instead.");
+    }
+}
+
+// [memory.syn]
+namespace std {
+    // ...
+    template<class T>
+        constexpr T* addressof(T& r) noexcept;
+    template<class T>
+        const T* addressof(const T&&) = delete("Cannot take address of rvalue.");
+
+    // ...
+    template<class T, class... Args> // T is not array
+        constexpr unique_ptr<T> make_unique(Args&&... args);
+    template<class T> // T is U[]
+        constexpr unique_ptr<T> make_unique(size_t n);
+    template<class T, class... Args> // T is U\[N]
+        unspecified make_unique(Args&&...) = delete(
+            "make_unique<U\[N]>(...) is not supported; perhaps you mean make_unique<U[]>(N) instead?");
+}
+
+// [basic.string.general]
+namespace std {
+    template<class charT, class traits = char_traits<charT>,
+             class Allocator = allocator<charT>>
+    class basic_string {
+    public:
+        // ...
+        basic_string(nullptr_t) = delete("Construct a string from a null pointer is undefined behavior.");
+}
+```
+
+## Other ## {#other-usage}
+
+A hypothetical usage of new `= delete("message");` that I can foresee to be commonly adopted is to mark the old API
+first with `[[deprecated("reason")]]`, and after a few versions, change it to `= delete("reason");`, so that further usage of old API directly results in an error message that
+can explain the removal reason and also point towards the new API. Standard library vendors can also do this as a QoI feature through the freedom of zombie names.
+
+# Design # {#design}
+
+## Previous Work ## {#previous-work}
+There have been three previous example of user-customisable error messages presented currently in the C++ standard:
+- C++11 `static_assert(expr, "message")`, by [[N1720]].
+- C++14 `[[deprecated("with reason")]]`, by [[N3760]].
+- C++20 `[[nodiscard("with reason")]]`, by [[P1301R4]].
+
+This proposal naturally fits in the same category of providing reasons/friendly messages alongside the original diagnostics and can use a lot of the existing wordings.
+
+## Syntax and Semantics ## {#syntax-semantics}
+The syntax I prefer is `= delete("with reason");`, in other words, an optional argument clause after the `delete` keyword where the only argument allowed is a single *string-literal*.
+
+The semantics will be entirely identical to regular `= delete;`, which means that the new form can be exchanged freely with the old form, with the only difference being the diagnostic message.
+Some additional semantics caveat is discussed in the Overriding Semantics section below.
+
+## Alternative Design and Issues ## {#alt-design}
+This section lists the alternative design choices and possible arguments against this proposal that have been considered.
+
+### Alternative Syntax ### {#alt-syntax}
+A previous proposal [[P1267R0]] proposed a `[[reason_not_used("reason")]]` attribute to enhance the compiler error in SFINAE failure cases.
+While the motivation is similar, the problem it solved is slightly different as `= delete` in general does not affect overload resolution.
+In its "Future Directions" section, however, a series of `[[reason_xxx]]` attributes were described, with the `[[reason_deleted("reason")]]`
+described will have identical semantics with what this proposal proposes. This proposal proposes:
+```cpp
+void fun() = delete("my reason");
+```
+which in future-[[P1267R0]] world will be expressed as
+```cpp
+[[reason_deleted("my reason")]]
+void fun() = delete;
+```
+
+Personally, comparing these two syntaxes, I prefer the proposed `= delete("reason");` one as it is more concise, less noisy, has reasoning closer to the actual deletion and does not
+have to repeat yourself by saying first, "I delete this function" then "the reason for delete is ..." twice. An advantage I can see for [[P1267R0]]-like solutions
+is that if the committee decided to accept several `[[reason_xxx("reason")]]` family (SFINAE, `private`, `= delete`, etc.), then the attribute with the same prefix can
+be seen as more compatible with rest of the core language. However, since [[P1267R0]] is currently inactive, I will still propose the `= delete("reason");` syntax.
+
+Of course, given that the *function-body* part of the grammar is relatively free, other (arcane?) syntax like `= default "reason";`, `= default["reason"]` can be proposed;
+I haven't explored these syntaxes since I think the syntax I'm proposing is the most natural one and is fitting the existing practices.
+
+### Overriding Semantics ### {#semantics}
+One of the new issues brought up by this new syntax is the overriding problem:
+```cpp
+struct A
+{
+    virtual void fun() = delete("reason");
+};
+struct B : public A
+{
+    void fun() override = delete("different reason");
+};
+```
+Should overriding with a different (or no) message parameter be supported? (Notice that you cannot override deleted functions with non-deleted ones or vice versa, so this is the only form.)
+
+I believe that this should be supported for the following reason:
+- Changing `= delete` message inside the library base classes should be non-breaking (non-observable).
+- Existing attributes allow this (and even went further, allow an overriding function to change from having attribute to not having).
+
+### Locales and Unevaluated Strings ### {#unevaluated-strings}
+I heard that there had been already some discussion in the committee for this proposal, probably in the discussion phase of [[P1267R0]];
+the hesitancy is basically that the *string-literal*s being accepted in the structure is unrestricted, thus may raise some doubt on how to handle
+things like `= delete(L"Wide reason");`.
+
+However, this is not a problem unique to this proposal. This problem also applies to the other three existing examples, and there is [[P2361R4]]
+to solve this problem in general. Therefore I do not see any reason locales of unevaluated strings should be an obstacle.
+
+As for the problem of displaying text that cannot be represented in the execution character set, this paper follows the existing [[P2246R1]]
+changes to `static_assert` wording and use "should" to allow flexibility.
+
+## Proposal Scope ## {#proposal-scope}
+This proposal is a pure language extension proposal with no library changes involved and is a pure addition, so no breaking changes are involved.
+It is intended practice that exchanging `= delete;` for `= delete("message");` will have no breakage and no user-noticeable effect except for the diagnostic messages.
+
+There has been sustained strong push back to the idea of mandating diagnostic texts in the standard library specifications, and in my opinion, such complaints are justified.
+This paper does not change this by only proposing to make such "deleted with reason" ability available and nothing more.
+
+This paper encourages vendors to apply any text they see fit for the purpose as a QoI, non-breaking feature.
+
+## Future Extensions ## {#extensions}
+There have been suggestions on supporting arbitrary *constant-expression*s in `static_assert` message parameter and other places so that we can generate something like
+```cpp
+make_unique<int[5]>(...) is not supported; perhaps you mean make_unique<int[]>(5) instead?
+```
+for the invocation `make_unique<int[5]>()` (so that message come with concrete types). I do not oppose such extensions, and this proposal does not prevent supporting `= delete(constant_string)` in the future either.
+However, this is out of scope for this proposal.
+
+## Target Vehicle ## {#target-vehicle}
+Timing is hard.
+
+I'm fully aware that it is already very late in the C++23 cycle, with the design freeze already passed and the wording freeze coming in a few months. And since this feature is not a breaking change,
+there is no particular emergency-related reason to hurry this.
+However, I would like to argue that this is an improvement to the C++11 deleted functions that is crucial for both its wider adoption and increase the user-friendliness of existing libraries.
+Therefore, I still want to (try to) propose this for C++23, in the sense that this fix for a missing piece is already 10 years late to the party, and we shouldn't hold this for something like 2 more years.
+Both user and library authors will definitely benefit from getting this feature as early as possible.
+Furthermore, the wording changes are minimal, and the implementation is really easy.
+
+## Feature Test Macro ## {#feature-test-macro}
+The previous works all bump the relevant attributes or feature testing macros to a new value to resemble the change. However, C++11 default and deleted functions don't
+have a feature test macro, so I propose to include a new language feature testing macro `__cpp_deleted_function_with_reason` (name can be changed) with the usual value.
+
+# Implementation Experience # {#implementation}
+
+An experimental implementation of the proposed feature is located in my Clang fork at [[!clang-implementation]], which is capable of handling
+```cpp
+void foo() = delete("Reason");
+void fun() {foo();}
+```
+and output the following error message: (close to what I want; of course, there are other formats such as put reason on separate lines)
+```cpp
+propose.cpp:2:13: error: call to deleted function 'foo': "Reason"
+void fun() {foo();}
+            ^~~
+propose.cpp:1:6: note: candidate function has been explicitly deleted
+void foo() = delete("Reason");
+     ^
+1 error generated.
+```
+The implementation is *very* incomplete (no support for constructors, no feature-test macro, only a few testing, etc.), so it is only aimed at proving that the vendors can support
+the proposed feature relatively easily.
+
+# Wording # {#wording}
+
+The wording below is based on [[!N4910]].
+
+Wording notes for CWG and editor:
+- This wording factors existing `= delete;` in the *function-body* out to a new grammar token, *deleted-function-body*, to allow reusing.
+    An alternative approach is to change [dcl.constexpr] to use the "deleted function" term directly.
+- The current wording is basically a combination of `static_assert` ([dcl.pre]/10, for error instead of warning) and `[[nodiscard]]` ([dcl.attr.nodiscard]).
+- Current wording makes use of [[P2361R4]]'s proposed *unevaluated-string*. If this proposal ends up landing before [[P2361R4]], then please change all occurrences of *unevaluated-string* into *string-literal*.
+
+## 9.2.6 The `constexpr` and `consteval` specifiers [dcl.constexpr] ## {#dcl.constexpr}
+Clause 4:
+
+> The definition of a constexpr constructor whose *function-body* is not <del>`= delete`</del><ins>*deleted-function-body*</ins> shall additionally satisfy the following requirements:
+
+Clause 5:
+
+> The definition of a constexpr destructor whose *function-body* is not <del>`= delete`</del><ins>*deleted-function-body*</ins> shall additionally satisfy the following requirement:
+
+## 9.5 Function definitions [dcl.fct.def] ## {#dcl.fct.def}
+### 9.5.1 In general [dcl.fct.def.general] ### {#dcl.fct.def.general}
+> Function definitions have the form
+<pre highlight=text>
+<i>function-definition</i>:
+    <i>attribute-specifier-seq<sub>opt</sub> decl-specifier-seq<sub>opt</sub> declarator virt-specifier-seq<sub>opt</sub> function-body</i>
+    <i>attribute-specifier-seq<sub>opt</sub> decl-specifier-seq<sub>opt</sub> declarator requires-clause function-body</i>
+<i>function-body</i>:
+    <i>ctor-initializer<sub>opt</sub> compound-statement</i>
+    <i>function-try-block</i>
+    = default ;
+    <del>= delete ;</del><ins><i>deleted-function-body</i></ins>
+<ins><i>deleted-function-body</i>:
+    = delete ;
+    = delete ( <i>unevaluated-string</i> ) ;</ins>
+</pre>
+
+### 9.5.3 Deleted definitions [dcl.fct.def.delete] ### {#dcl.fct.def.delete}
+Clause 1:
+
+> A *deleted definition* of a function is a function definition whose *function-body* is of the form <del>`= delete ;`</del><ins>*deleted-function-body*</ins> or an explicitly-defaulted definition of the function
+where the function is defined as deleted. A *deleted function* is a function with a deleted definition or a function that is implicitly defined as deleted.
+
+Clause 2:
+
+> A program that refers to a deleted function implicitly or explicitly, other than to declare it, is ill-formed<del>.</del><ins>, and the resulting diagnostic message ([intro.compliance]) should include the text of the *unevaluated-string*, if one is supplied.</ins>
+
+> [*Note 1*: This includes calling the function implicitly or explicitly and forming a pointer or pointer-to-member to the function.
+It applies even for references in expressions that are not potentially-evaluated. For an overload set, only the function selected by overload resolution is referenced.
+The implicit odr-use ([basic.def.odr]) of a virtual function does not, by itself, constitute a reference. <ins>The *unevaluated-string*, if present, can be used to explain the rationale for why the function is deleted and/or to suggest a replacing entity.</ins> — *end note*]
+
+## 15.11 Predefined macro names [cpp.predefined] ## {#cpp.predefined}
+In [tab:cpp.predefined.ft], insert a new row in a place that respects the current alphabetical order of the table, and substituting `20XXYYL` by the date of adoption.
+<table>
+<thead>
+<tr>
+    <td>Macro name</td>
+    <td>Value</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>`__cpp_deleted_function_with_reason`</td>
+    <td>`20XXYYL`</td>
+</tr>
+</tbody>
+</table>
+
+<pre class=biblio>
+{
+    "ACTCD19": {
+        "authors": [
+            "Andrew Tomazos"
+        ],
+        "href": "https://codesearch.isocpp.org",
+        "title": "Andrew's C/C++ Token Count Dataset 2019"
+    },
+    "clang-implementation": {
+        "authors": [
+            "Yihe Li"
+        ],
+        "href": "https://github.com/Mick235711/llvm-project/tree/delete-with-reason",
+        "title": "Mick235711's Clang Fork"
+    }
+}
+</pre>
+

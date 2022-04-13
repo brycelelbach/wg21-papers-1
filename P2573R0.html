@@ -1560,10 +1560,10 @@ Possible extra rowspan handling
     blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
     blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
   </style>
-  <meta content="Bikeshed version 2e3c4c68b, updated Fri Jan 14 14:49:00 2022 -0800" name="generator">
+  <meta content="Bikeshed version fb1e763a4, updated Tue Mar 1 13:13:50 2022 -0800" name="generator">
   <link href="https://wg21.link/P2573R0" rel="canonical">
   <link href="https://isocpp.org/favicon.ico" rel="icon">
-  <meta content="ee7e4927a1923f7c102b4e8295cdc00e47be715a" name="document-revision">
+  <meta content="e553392ffb79263871cb13eadd985ca3cca4be77" name="document-revision">
 <style>
 table, th, td { border:1px solid grey; }
 </style>
@@ -2086,7 +2086,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">P2573R0<br><code class="highlight"><c- o>=</c-> <c- k>delete</c-><c- p>(</c-><c- s>"should have a reason"</c-><c- p>);</c-></code></h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Published Proposal, <time class="dt-updated" datetime="2022-04-06">2022-04-06</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Published Proposal, <time class="dt-updated" datetime="2022-04-12">2022-04-12</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2249,11 +2249,11 @@ The usage client is
 <c- p>};</c->
 </pre>
       <td>
-<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>15</c-><c- o>:</c-><c- mi>23</c-><c- o>:</c-> <c- nl>error</c-><c- p>:</c-> <c- n>calling</c-> <c- n>a</c->
+<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>15</c-><c- o>:</c-><c- mi>23</c-><c- o>:</c-> <c- n>error</c-><c- o>:</c-> <c- n>calling</c-> <c- n>a</c->
 <c- k>private</c-> <c- n>constructor</c-> <c- n>of</c-> <c- k>class</c-> '<c- n>NonCopyable</c->'
     <c- n>NonCopyable</c-> <c- n>nc2</c-> <c- o>=</c-> <c- n>nc</c-><c- p>;</c->
                       <c- o>^</c->
-<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- nl>note</c-><c- p>:</c-> <c- n>declared</c-> <c- k>private</c-> <c- n>here</c->
+<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- n>note</c-><c- o>:</c-> <c- n>declared</c-> <c- k>private</c-> <c- n>here</c->
     <c- n>NonCopyable</c-><c- p>(</c-><c- k>const</c-> <c- n>NonCopyable</c-><c- o>&amp;</c-><c- p>);</c->
     <c- o>^</c->
 </pre>
@@ -2275,11 +2275,11 @@ The usage client is
 <c- p>};</c->
 </pre>
       <td>
-<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>16</c-><c- o>:</c-><c- mi>17</c-><c- o>:</c-> <c- nl>error</c-><c- p>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c->
+<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>16</c-><c- o>:</c-><c- mi>17</c-><c- o>:</c-> <c- n>error</c-><c- o>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c->
 <c- n>constructor</c-> <c- n>of</c-> '<c- n>NonCopyable</c->'
     <c- n>NonCopyable</c-> <c- n>nc2</c-> <c- o>=</c-> <c- n>nc</c-><c- p>;</c->
                 <c- o>^</c->     <c- o>~~</c->
-<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- nl>note</c-><c- p>:</c-> '<c- n>NonCopyable</c->' <c- n>has</c-> <c- n>been</c->
+<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- n>note</c-><c- o>:</c-> '<c- n>NonCopyable</c->' <c- n>has</c-> <c- n>been</c->
 <c- n>explicitly</c-> <c- n>marked</c-> <c- n>deleted</c-> <c- n>here</c->
     <c- n>NonCopyable</c-><c- p>(</c-><c- k>const</c-> <c- n>NonCopyable</c-><c- o>&amp;</c-><c- p>)</c-> <c- o>=</c-> <c- k>delete</c-><c- p>;</c->
     <c- o>^</c->
@@ -2306,12 +2306,12 @@ The usage client is
 <c- p>};</c->
 </pre>
       <td>
-<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>16</c-><c- o>:</c-><c- mi>17</c-><c- o>:</c-> <c- nl>error</c-><c- p>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c->
+<pre class="language-cpp highlight"><c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>16</c-><c- o>:</c-><c- mi>17</c-><c- o>:</c-> <c- n>error</c-><c- o>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c->
 <c- n>constructor</c-> <c- n>of</c-> '<c- n>NonCopyable</c->'<c- o>:</c-> <c- n>Since</c-> <c- k>this</c-> <c- k>class</c-> <c- nc>manages</c->
 <c- n>unique</c-> <c- n>resources</c-><c- p>,</c-> <c- n>copy</c-> <c- n>is</c-> <c- n>not</c-> <c- n>supported</c-><c- p>;</c-> <c- n>use</c-> <c- n>move</c-> <c- n>instead</c-><c- p>.</c->
     <c- n>NonCopyable</c-> <c- n>nc2</c-> <c- o>=</c-> <c- n>nc</c-><c- p>;</c->
                 <c- o>^</c->     <c- o>~~</c->
-<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- nl>note</c-><c- p>:</c-> '<c- n>NonCopyable</c->' <c- n>has</c-> <c- n>been</c->
+<c- o>&lt;</c-><c- n>source</c-><c- o>>:</c-><c- mi>8</c-><c- o>:</c-><c- mi>5</c-><c- o>:</c-> <c- n>note</c-><c- o>:</c-> '<c- n>NonCopyable</c->' <c- n>has</c-> <c- n>been</c->
 <c- n>explicitly</c-> <c- n>marked</c-> <c- n>deleted</c-> <c- n>here</c->
     <c- n>NonCopyable</c-><c- p>(</c-><c- k>const</c-> <c- n>NonCopyable</c-><c- o>&amp;</c-><c- p>)</c->
     <c- o>^</c->
@@ -2326,7 +2326,7 @@ The usage client is
    <p><strong>Note: As will be discussed below, the standard does not mandate any diagnostic text for deleted functions; a vendor has the freedom (and is encouraged by this proposal)
 to implement these messages as non-breaking QoI features.</strong></p>
 <pre class="language-cpp highlight"><c- c1>// [unique.ptr.single.general]</c->
-<c- k>namespace</c-> <c- n>std</c-> <c- p>{</c->
+<c- k>namespace</c-> <c- nn>std</c-> <c- p>{</c->
     <c- k>template</c-><c- o>&lt;</c-><c- k>class</c-> <c- nc>T</c-><c- p>,</c-> <c- k>class</c-> <c- nc>D</c-> <c- o>=</c-> <c- n>default_delete</c-><c- o>&lt;</c-><c- n>T</c-><c- o>>></c-> <c- k>class</c-> <c- nc>unique_ptr</c-> <c- p>{</c->
     <c- k>public</c-><c- o>:</c->
         <c- c1>// ...</c->
@@ -2339,7 +2339,7 @@ to implement these messages as non-breaking QoI features.</strong></p>
 <c- p>}</c->
 
 <c- c1>// [memory.syn]</c->
-<c- k>namespace</c-> <c- n>std</c-> <c- p>{</c->
+<c- k>namespace</c-> <c- nn>std</c-> <c- p>{</c->
     <c- c1>// ...</c->
     <c- k>template</c-><c- o>&lt;</c-><c- k>class</c-> <c- nc>T</c-><c- o>></c->
         <c- k>constexpr</c-> <c- n>T</c-><c- o>*</c-> <c- n>addressof</c-><c- p>(</c-><c- n>T</c-><c- o>&amp;</c-> <c- n>r</c-><c- p>)</c-> <c- k>noexcept</c-><c- p>;</c->
@@ -2357,7 +2357,7 @@ to implement these messages as non-breaking QoI features.</strong></p>
 <c- p>}</c->
 
 <c- c1>// [basic.string.general]</c->
-<c- k>namespace</c-> <c- n>std</c-> <c- p>{</c->
+<c- k>namespace</c-> <c- nn>std</c-> <c- p>{</c->
     <c- k>template</c-><c- o>&lt;</c-><c- k>class</c-> <c- nc>charT</c-><c- p>,</c-> <c- k>class</c-> <c- nc>traits</c-> <c- o>=</c-> <c- n>char_traits</c-><c- o>&lt;</c-><c- n>charT</c-><c- o>></c-><c- p>,</c->
              <c- k>class</c-> <c- nc>Allocator</c-> <c- o>=</c-> <c- n>allocator</c-><c- o>&lt;</c-><c- n>charT</c-><c- o>>></c->
     <c- k>class</c-> <c- nc>basic_string</c-> <c- p>{</c->
@@ -2382,6 +2382,8 @@ can explain the removal reason and also point towards the new API. Standard libr
      <p>C++20 <code class="highlight"><c- p>[[</c-><c- n>nodiscard</c-><c- p>(</c-><c- s>"with reason"</c-><c- p>)]]</c-></code>, by <a data-link-type="biblio" href="#biblio-p1301r4">[P1301R4]</a>.</p>
    </ul>
    <p>This proposal naturally fits in the same category of providing reasons/friendly messages alongside the original diagnostics and can use a lot of the existing wordings.</p>
+   <p>A previous proposal, <a data-link-type="biblio" href="#biblio-n4186">[N4186]</a>, proposed the exactly same thing, and is received favorably by EWG in 2014. However, there is no further progress on that proposal, and
+thus this proposal aims to continue the work in this direction.</p>
    <h3 class="heading settled" data-level="4.2" id="syntax-semantics"><span class="secno">4.2. </span><span class="content">Syntax and Semantics</span><a class="self-link" href="#syntax-semantics"></a></h3>
     The syntax I prefer is <code class="highlight"><c- o>=</c-> <c- k>delete</c-><c- p>(</c-><c- s>"with reason"</c-><c- p>);</c-></code>, in other words, an optional argument clause after the <code class="highlight"><c- k>delete</c-></code> keyword where the only argument allowed is a single <em>string-literal</em>. 
    <p>The semantics will be entirely identical to regular <code class="highlight"><c- o>=</c-> <c- k>delete</c-><c- p>;</c-></code>, which means that the new form can be exchanged freely with the old form, with the only difference being the diagnostic message.
@@ -2408,7 +2410,7 @@ I haven’t explored these syntaxes since I think the syntax I’m proposing is 
     One of the new issues brought up by this new syntax is the overriding problem: 
 <pre class="language-cpp highlight"><c- k>struct</c-> <c- nc>A</c->
 <c- p>{</c->
-    <c- k>virtual</c-> <c- b>void</c-> <c- n>fun</c-><c- p>()</c-> <c- o>=</c-> <c- k>delete</c-><c- p>(</c-><c- s>"reason"</c-><c- p>);</c->
+    <c- k>virtual</c-> <c- b>void</c-> <c- nf>fun</c-><c- p>()</c-> <c- o>=</c-> <c- k>delete</c-><c- p>(</c-><c- s>"reason"</c-><c- p>);</c->
 <c- p>};</c->
 <c- k>struct</c-> <c- nc>B</c-> <c- o>:</c-> <c- k>public</c-> <c- n>A</c->
 <c- p>{</c->
@@ -2458,10 +2460,10 @@ have a feature test macro, so I propose to include a new language feature testin
 <c- b>void</c-> <c- nf>fun</c-><c- p>()</c-> <c- p>{</c-><c- n>foo</c-><c- p>();}</c->
 </pre>
    and output the following error message: (close to what I want; of course, there are other formats such as put reason on separate lines) 
-<pre class="language-cpp highlight"><c- n>propose</c-><c- p>.</c-><c- nl>cpp</c-><c- p>:</c-><c- mi>2</c-><c- o>:</c-><c- mi>13</c-><c- o>:</c-> <c- nl>error</c-><c- p>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c-> <c- n>function</c-> '<c- n>foo</c->'<c- o>:</c-> <c- s>"Reason"</c->
+<pre class="language-cpp highlight"><c- n>propose</c-><c- p>.</c-><c- n>cpp</c-><c- o>:</c-><c- mi>2</c-><c- o>:</c-><c- mi>13</c-><c- o>:</c-> <c- n>error</c-><c- o>:</c-> <c- n>call</c-> <c- n>to</c-> <c- n>deleted</c-> <c- n>function</c-> '<c- n>foo</c->'<c- o>:</c-> <c- s>"Reason"</c->
 <c- b>void</c-> <c- n>fun</c-><c- p>()</c-> <c- p>{</c-><c- n>foo</c-><c- p>();}</c->
             <c- o>^~~</c->
-<c- n>propose</c-><c- p>.</c-><c- nl>cpp</c-><c- p>:</c-><c- mi>1</c-><c- o>:</c-><c- mi>6</c-><c- o>:</c-> <c- nl>note</c-><c- p>:</c-> <c- n>candidate</c-> <c- n>function</c-> <c- n>has</c-> <c- n>been</c-> <c- n>explicitly</c-> <c- n>deleted</c->
+<c- n>propose</c-><c- p>.</c-><c- n>cpp</c-><c- o>:</c-><c- mi>1</c-><c- o>:</c-><c- mi>6</c-><c- o>:</c-> <c- n>note</c-><c- o>:</c-> <c- n>candidate</c-> <c- n>function</c-> <c- n>has</c-> <c- n>been</c-> <c- n>explicitly</c-> <c- n>deleted</c->
 <c- b>void</c-> <c- n>foo</c-><c- p>()</c-> <c- o>=</c-> <c- k>delete</c-><c- p>(</c-><c- s>"Reason"</c-><c- p>);</c->
      <c- o>^</c->
 <c- mi>1</c-> <c- n>error</c-> <c- n>generated</c-><c- p>.</c->
@@ -2691,6 +2693,8 @@ The implicit odr-use ([basic.def.odr]) of a virtual function does not, by itself
   <dl>
    <dt id="biblio-clang-implementation">[CLANG-IMPLEMENTATION]
    <dd>Yihe Li. <a href="https://github.com/Mick235711/llvm-project/tree/delete-with-reason"><cite>Mick235711's Clang Fork</cite></a>. URL: <a href="https://github.com/Mick235711/llvm-project/tree/delete-with-reason">https://github.com/Mick235711/llvm-project/tree/delete-with-reason</a>
+   <dt id="biblio-n4186">[N4186]
+   <dd>Matthias Kretz. <a href="https://wg21.link/n4186"><cite>Supporting Custom Diagnostics and SFINAE</cite></a>. 10 October 2014. URL: <a href="https://wg21.link/n4186">https://wg21.link/n4186</a>
    <dt id="biblio-n4910">[N4910]
    <dd>Thomas Köppe. <a href="https://wg21.link/n4910"><cite>Working Draft, Standard for Programming Language C++</cite></a>. 17 March 2022. URL: <a href="https://wg21.link/n4910">https://wg21.link/n4910</a>
   </dl>

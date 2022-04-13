@@ -11,7 +11,7 @@ URL: https://wg21.link/P2573R0
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-06
+Date: 2022-04-12
 Markup Shorthands: markdown yes
 </pre>
 
@@ -269,6 +269,9 @@ There have been three previous example of user-customisable error messages prese
 - C++20 `[[nodiscard("with reason")]]`, by [[P1301R4]].
 
 This proposal naturally fits in the same category of providing reasons/friendly messages alongside the original diagnostics and can use a lot of the existing wordings.
+
+A previous proposal, [[!N4186]], proposed the exactly same thing, and is received favorably by EWG in 2014. However, there is no further progress on that proposal, and
+thus this proposal aims to continue the work in this direction.
 
 ## Syntax and Semantics ## {#syntax-semantics}
 The syntax I prefer is `= delete("with reason");`, in other words, an optional argument clause after the `delete` keyword where the only argument allowed is a single *string-literal*.

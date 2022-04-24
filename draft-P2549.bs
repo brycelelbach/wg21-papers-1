@@ -11,12 +11,13 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-02
+Date: 2022-04-24
 Markup Shorthands: markdown yes
 </pre>
 
 <style>
 table, th, td { border:1px solid grey; }
+h5 { font-style: normal; }
 </style>
 
 [[!P0323R12]] introduced class template `std::expected<T, E>`,
@@ -61,6 +62,8 @@ The name of the member method is inconsistent with the
 
 This revision thus targets LWG.
 - Since [[P2505R1]] seems to target C++23, add some discussion regarding that paper.
+- Address feedback on R0: Incorporate wording to also rename the exposition only private member of `std::unexpected<E>` and `std::bad_expected_access<E>`
+    from `val` to `unex`, to be consistent with `std::expected<T, E>`.
 
 ## R0 ## {#r0}
 - Initial revision.
@@ -281,12 +284,13 @@ can see consistency here.
 
 # Wording # {#wording}
 
-The wording below is based on [[!N4910]].
+The wording below is based on [[!N4910]]. Wording includes only the renaming of `value()` to `error()`, and `val` to `unex`; no semantic changes are intended.
 
 Currently, feature test macro wording is not present. If [[P2505R1]] ends up adopting the macro changes, then I will provide an accompanied wording here.
 
-## 22.8.3.2 Class template `unexpected` [expected.un.object] ## {#expected.un.object}
-### 22.8.3.2.1 General [expected.un.object.general] ### {#expected.un.object.general}
+## 22.8.3 Unexpected objects [expected.unexpected] ## {#expected.unexpected}
+### 22.8.3.2 Class template `unexpected` [expected.un.object] ### {#expected.un.object}
+#### 22.8.3.2.1 General [expected.un.object.general] #### {#expected.un.object.general}
 <pre>
 namespace std {
     template&lt;class E&gt;
@@ -317,29 +321,75 @@ namespace std {
         friend constexpr void swap(unexpected& x, unexpected& y) noexcept(noexcept(x.swap(y)));
 
     private:
-        E <i>val</i>; // <i>exposition only</i>
+        E <del><i>val</i></del><ins><i>unex</i></ins>; // <i>exposition only</i>
     };
 
     template&lt;class E&gt; unexpected(E) -&gt; unexpected&lt;E&gt;;
 }
 </pre>
 
-### 22.8.3.2.3 Observers [expected.un.obs] ### {#expected.un.obs}
+#### 22.8.3.2.2 Constructors [expected.un.ctor] #### {#expected.un.ctor}
+```cpp
+template<class Err = E>
+    constexpr explicit unexpected(Err&& e);
+```
+
+*Constraints*:
+  * `is_same_v<remove_cvref_t<Err>, unexpected>` is `false`; and
+  * `is_same_v<remove_cvref_t<Err>, in_place_t>` is `false`; and
+  * `is_constructible_v<E, Err>` is `true`.
+
+*Effects*: Direct-non-list-initializes <code><del><i>val</i></del><ins><i>unex</i></ins></code> with `std::forward<Err>(e)`.
+
+*Throws*: Any exception thrown by the initialization of <code><del><i>val</i></del><ins><i>unex</i></ins></code>.
+
+```cpp
+template<class... Args>
+    constexpr explicit unexpected(in_place_t, Args&&... args);
+```
+
+*Constraints*: `is_constructible_v<E, Args...>` is `true`.
+
+*Effects*: Direct-non-list-initializes <code><del><i>val</i></del><ins><i>unex</i></ins></code> with `std::forward<Args>(args)...`.
+
+*Throws*: Any exception thrown by the initialization of <code><del><i>val</i></del><ins><i>unex</i></ins></code>.
+
+```cpp
+template<class U, class... Args>
+    constexpr explicit unexpected(in_place_t, initializer_list<U> il, Args&&... args);
+```
+
+*Constraints*: `is_constructible_v<E, initializer_list<U>&, Args...>` is `true`.
+
+*Effects*: Direct-non-list-initializes <code><del><i>val</i></del><ins><i>unex</i></ins></code> with `il, std::forward<Args>(args)...`.
+
+*Throws*: Any exception thrown by the initialization of <code><del><i>val</i></del><ins><i>unex</i></ins></code>.
+
+#### 22.8.3.2.3 Observers [expected.un.obs] #### {#expected.un.obs}
 <pre>
 constexpr const E& <del>value</del><ins>error</ins>() const & noexcept;
 constexpr E& <del>value</del><ins>error</ins>() & noexcept;
 </pre>
 
-*Returns*: <code><i>val</i></code>.
+*Returns*: <code><del><i>val</i></del><ins><i>unex</i></ins></code>.
 
 <pre>
 constexpr E&& <del>value</del><ins>error</ins>() && noexcept;
 constexpr const E&& <del>value</del><ins>error</ins>() const && noexcept;
 </pre>
 
-*Returns*: <code>std::move(<i>val</i>)</code>.
+*Returns*: <code>std::move(<del><i>val</i></del><ins><i>unex</i></ins>)</code>.
 
-### 22.8.3.2.5 Equality operator [expected.un.eq] ### {#expected.un.eq}
+#### 22.8.3.2.4 Swap [expected.un.swap] #### {#expected.un.swap}
+```cpp
+constexpr void swap(unexpected& other) noexcept(is_nothrow_swappable_v<E>);
+```
+
+*Mandates*: `is_swappable_v<E>` is `true`.
+
+*Effects*: Equivalent to: <code>using std::swap; swap(<del><i>val</i></del><ins><i>unex</i></ins>, other.<del><i>val</i></del><ins><i>unex</i></ins>);</code>
+
+#### 22.8.3.2.5 Equality operator [expected.un.eq] #### {#expected.un.eq}
 ```cpp
 template<class E2>
     friend constexpr bool operator==(const unexpected& x, const unexpected<E2>& y);
@@ -350,6 +400,47 @@ template<class E2>
 is convertible to `bool`.
 
 *Returns*: <code>x.<del>value</del><ins>error</ins>() == y.<del>value</del><ins>error</ins>()</code>.
+
+## 22.8.4 Class template `bad_expected_access` [expected.bad] ## {#expected.bad}
+<pre>
+namespace std {
+    template&lt;class E&gt;
+    class bad_expected_access : public bad_expected_access&lt;void&gt; {
+    public:
+        explicit bad_expected_access(E);
+        const char* what() const noexcept override;
+        E& error() & noexcept;
+        const E& error() const & noexcept;
+        E&& error() && noexcept;
+        const E&& error() const && noexcept;
+    private:
+        E <del><i>val</i></del><ins><i>unex</i></ins>; // <i>exposition only</i>
+    };
+}
+</pre>
+
+The class template `bad_expected_access` defines the type of objects thrown as exceptions to report the situation where an attempt
+is made to access the value of an `expected<T, E>` object for which `has_value()` is `false`.
+
+```cpp
+explicit bad_expected_access(E e);
+```
+
+*Effects*: Initializes <code><del><i>val</i></del><ins><i>unex</i></ins></code> with `std::move(e)`.
+
+```cpp
+const E& error() const & noexcept;
+E& error() & noexcept;
+```
+
+*Returns*: <code><del><i>val</i></del><ins><i>unex</i></ins></code>.
+
+```cpp
+E&& error() && noexcept;
+const E&& error() const && noexcept;
+```
+
+*Returns*: <code>std::move(<del><i>val</i></del><ins><i>unex</i></ins>)</code>.
 
 ## 22.8.6 Class template `expected` [expected.expected] ## {#expected.expected}
 ### 22.8.6.2 Constructors [expected.object.ctor] ### {#expected.object.ctor}

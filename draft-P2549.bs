@@ -1,5 +1,6 @@
 <pre class='metadata'>
 Title: std::unexpected&lt;E&gt; should have error() as member accessor
+H1: <code>std::unexpected&lt;E&gt;</code> should have <code>error()</code> as member accessor
 Shortname: D2549
 Revision: 1
 Audience: LWG

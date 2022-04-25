@@ -1,5 +1,6 @@
 <pre class='metadata'>
-Title: <code>= delete("should have a reason");</code>
+Title: = delete("should have a reason");
+H1: <code>= delete("should have a reason");</code>
 Shortname: D2573
 Revision: 1
 Audience: EWG

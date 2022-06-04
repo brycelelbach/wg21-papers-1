@@ -12,7 +12,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-24
+Date: 2022-06-04
 Markup Shorthands: markdown yes
 </pre>
 
@@ -62,7 +62,7 @@ The name of the member method is inconsistent with the
 **Outcome:** Strong Consensus in Favor 🎉
 
 This revision thus targets LWG.
-- Since [[P2505R1]] seems to target C++23, add some discussion regarding that paper.
+- Since [[P2505R2]] seems to target C++23, add some discussion regarding that paper.
 - Address feedback on R0: Incorporate wording to also rename the exposition only private member of `std::unexpected<E>` and `std::bad_expected_access<E>`
     from `val` to `unex`, to be consistent with `std::expected<T, E>`.
 
@@ -189,8 +189,8 @@ This proposal targets C++23. I'm aware that the design freeze deadline of C++23 
 in `std::expected<T, E>`. Furthermore, this proposal will be a huge breaking change (that makes it simply unviable to propose) after C++23.
 
 ## Feature Test Macro ## {#feature-test-macro}
-As long as the proposal lands in C++23, I don't think there is a need to change any feature test macro. However, if L(E)WG feels there is a need or if [[P2505R1]] ends up bumping the feature test macro,
-then I suggest bumping `__cpp_lib_expected` to the date of adoption (definitely larger than `202202L`, and probably share a value with [[P2505R1]]).
+As long as the proposal lands in C++23, I don't think there is a need to change any feature test macro. However, if L(E)WG feels there is a need or if [[P2505R2]] ends up bumping the feature test macro,
+then I suggest bumping `__cpp_lib_expected` to the date of adoption (definitely larger than `202202L`, and probably share a value with [[P2505R2]]).
 
 # Implementation & Usage Experience # {#implementation}
 
@@ -287,7 +287,7 @@ can see consistency here.
 
 The wording below is based on [[!N4910]]. Wording includes only the renaming of `value()` to `error()`, and `val` to `unex`; no semantic changes are intended.
 
-Currently, feature test macro wording is not present. If [[P2505R1]] ends up adopting the macro changes, then I will provide an accompanied wording here.
+Currently, feature test macro wording is not present. If [[P2505R2]] ends up adopting the macro changes, then I will provide an accompanied wording here.
 
 ## 22.8.3 Unexpected objects [expected.unexpected] ## {#expected.unexpected}
 ### 22.8.3.2 Class template `unexpected` [expected.un.object] ### {#expected.un.object}

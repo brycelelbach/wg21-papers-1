@@ -6,13 +6,13 @@ Revision: 1
 Audience: EWG
 Status: D
 Group: WG21
-!Target: C++23
+!Target: C++26
 URL: https://wg21.link/D2573R1
 !Source: <a href="https://github.com/Mick235711/wg21-papers/blob/main/draft-P2573.bs">github.com/Mick235711/wg21-papers/blob/main/draft-P2573.bs</a>
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-04-12
+Date: 2022-06-18
 Markup Shorthands: markdown yes
 </pre>
 
@@ -27,6 +27,9 @@ This paper proposes to take a further step forward, and improve upon the other c
 by also introducing an optional message component.
 
 # Revision History # {#revisions}
+
+## R1 ## {#r1}
+- Retargeted to C++26 due to EWG schedule constraint.
 
 ## R0 ## {#r0}
 - Initial revision.
@@ -352,14 +355,7 @@ for the invocation `make_unique<int[5]>()` (so that message come with concrete t
 However, this is out of scope for this proposal.
 
 ## Target Vehicle ## {#target-vehicle}
-Timing is hard.
-
-I'm fully aware that it is already very late in the C++23 cycle, with the design freeze already passed and the wording freeze coming in a few months. And since this feature is not a breaking change,
-there is no particular emergency-related reason to hurry this.
-However, I would like to argue that this is an improvement to the C++11 deleted functions that is crucial for both its wider adoption and increase the user-friendliness of existing libraries.
-Therefore, I still want to (try to) propose this for C++23, in the sense that this fix for a missing piece is already 10 years late to the party, and we shouldn't hold this for something like 2 more years.
-Both user and library authors will definitely benefit from getting this feature as early as possible.
-Furthermore, the wording changes are minimal, and the implementation is really easy.
+This proposal targets C++26.
 
 ## Feature Test Macro ## {#feature-test-macro}
 The previous works all bump the relevant attributes or feature testing macros to a new value to resemble the change. However, C++11 default and deleted functions don't

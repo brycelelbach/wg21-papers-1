@@ -12,7 +12,7 @@ URL: https://wg21.link/D2549R1
 !Issue Tracking: <a href="https://github.com/Mick235711/wg21-papers/issues">GitHub Mick235711/wg21-papers</a>
 Editor: Yihe Li, winmikedows@hotmail.com
 No abstract: true
-Date: 2022-06-04
+Date: 2022-06-20
 Markup Shorthands: markdown yes
 </pre>
 
@@ -57,6 +57,17 @@ The name of the member method is inconsistent with the
 <table>
     <thead><tr><td>SF</td><td>F</td><td>N</td><td>A</td><td>SA</td></tr></thead>
     <tbody><tr><td>7</td><td>5</td><td>2</td><td>0</td><td>0</td></tr></tbody>
+</table>
+
+**Outcome:** Strong Consensus in Favor 🎉
+
+In the 2022-05 Library Evolution Electronic Polling period, the paper was forwarded to LWG.
+
+**Poll 1.12:** Send [[!P2549R0]] to Library Working Group for C++23, classified as an improvement of an existing feature ([[P0592R4]] bucket 2 item).
+
+<table>
+    <thead><tr><td>SF</td><td>F</td><td>N</td><td>A</td><td>SA</td></tr></thead>
+    <tbody><tr><td>9</td><td>9</td><td>2</td><td>0</td><td>0</td></tr></tbody>
 </table>
 
 **Outcome:** Strong Consensus in Favor 🎉

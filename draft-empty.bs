@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: Add the missing empty() to mdspan
 H1: Add the missing <code>empty()</code> to <code>mdspan</code>
-Shortname: DXXXX
+Shortname: D2613
 Revision: 0
 Audience: LEWG, LWG
 Status: D
